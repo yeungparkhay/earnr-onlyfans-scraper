@@ -8,13 +8,15 @@ from bs4 import BeautifulSoup, NavigableString
 import json
 from math import ceil
 import pandas as pd
+import sys
 
 base_urls = [
     'https://onlyfinder.com/profiles?q=location:51.5116,-0.1312,500km', # London
-    'https://onlyfinder.com/profiles?q=location:56.0399,-3.9220,500km' # Edinburgh
+    'https://onlyfinder.com/profiles?q=location:56.0399,-3.9220,500km', # Edinburgh
+    'https://onlyfinder.com/profiles?q=location:51.9391,-8.4420,500km', # Cork
 ]
 
-base_url = base_urls[1]
+base_url = base_urls[2]
 
 base_dir = str(pathlib.Path().resolve())
 num_results = 1000
@@ -23,9 +25,16 @@ def downloadData():
     entries = []
 
     for i in range(ceil(num_results / 26)):
-        driver_path = base_dir + '\chromedriver_win32\chromedriver.exe'
         options = Options()
-        options.binary_location = r'C:\Program Files\Google\Chrome\Application\chrome.exe'
+        driver_path = ''
+        if (sys.platform == 'win32'):
+            print("detected Windows platform")
+            driver_path = base_dir + '\chromedriver_win32\chromedriver.exe'
+            options.binary_location = r'C:\Program Files\Google\Chrome\Application\chrome.exe'
+        elif (sys.platform == 'darwin'):
+            print("detected Mac platform")
+            driver_path = base_dir + '/chromedriver_mac64/chromedriver'
+            options.binary_location = '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome'
         options.add_argument("--disable-blink-features=AutomationControlled")
         driver = webdriver.Chrome(executable_path=driver_path, options=options)
         
